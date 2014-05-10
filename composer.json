@@ -1,7 +1,7 @@
 {
     "name": "mmanos/laravel-search",
     "description": "A search package for Laravel 4.",
-    "keywords": ["laravel", "search", "lucene"],
+    "keywords": ["laravel", "search", "lucene", "zend", "elasticsearch"],
     "authors": [
         {
             "name": "Mark Manos",

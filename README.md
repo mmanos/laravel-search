@@ -185,7 +185,7 @@ $results = Search::index('posts')->select('id', 'created_at')
 	->get();
 ```
 
-*Note: chained filters/searches are constructed as boolean searches where each **must** provide a match.*
+*Note: chained filters/searches are constructed as boolean searches where each __must__ provide a match.*
 
 Delete an entire index:
 
