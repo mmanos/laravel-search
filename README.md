@@ -1,10 +1,8 @@
-Search Package for Laravel 4
-============================
+# Search Package for Laravel 4
 
-This package provides full text search capabilities for Laravel 4 applications.
+This package provides a unified API across a variety of different full text search services. It currently supports drivers for [Elasticsearch](http://www.elasticsearch.org/) and [ZendSearch](https://github.com/zendframework/ZendSearch) (good for local use).
 
-Installation via Composer
--------------------------
+## Installation Via Composer
 
 Add this to you composer.json file, in the require object:
 
@@ -32,8 +30,7 @@ Add a class alias to `app/config/app.php`, within the `aliases` array.
 )
 ```
 
-Configuration
--------------
+## Configuration
 
 Publish the default config file to your application so you can make modifications.
 
@@ -41,43 +38,157 @@ Publish the default config file to your application so you can make modification
 php artisan config:publish mmanos/laravel-search
 ```
 
+### Dependencies
+
 The following dependencies are needed for the listed search drivers:
 
 * ZendSearch: `zendframework/zendsearch`
 * Elasticsearch: `elasticsearch/elasticsearch`
 
-Working with the default index
-------------------------------
+### Default Index
 
-This package provides a convenient syntax for working with the "default" index. Edit the `default_index` field in the config file to change this value.
+This package provides a convenient syntax for working with a "default" index. Edit the `default_index` field in the config file to change this value. If you need to work with more than one index, see *Working With Multiple Indicies* below.
 
-Add a document with an `id` of "1" to the "default" index:
+## Indexing Operations
+
+Indexing is very easy with this package. Simply provide a unique identifier for the document and an associative array of fields to index.
+
+The index will be **created automatically** if it does not exist the first time you access it.
+
+### Index A Document
+
+Add a document to the "default" index with an `id` of "1".
 
 ```php
 Search::insert(1, array(
 	'title' => 'My title',
-	'content' => 'Some random content here...',
+	'content' => 'The quick brown fox...',
+	'status' => 'published',
 ));
 ```
 
-*Note: documents are required to provide a unique `id`. The value may be a string or an integer. This id is used to delete records and is also returned in search results.*
+*Note: `id` may be a string or an integer. This id is used to delete records and is also returned in search results.*
 
-*Note: the index will be created automatically if it does not exist.*
+### Store Extra Parameters With A Document
 
-Search the "default" index for documents who's `content` field contains the word 'random':
+You may store extra parameters with a document so they can be retrieved at a later point from search results. This can be useful for referencing timestamps or other record identifiers.
 
 ```php
-$results = Search::search('content', 'random')->get();
+Search::insert(
+	"post-1",
+	array(
+		'title' => 'My title',
+		'content' => 'The quick brown fox...',
+		'status' => 'published',
+	),
+	array(
+		'created_at' => time(),
+		'creator_id' => 5,
+	)
+);
 ```
 
-Delete the document with an `id` of "1":
+*Note: Extra parameters are not indexed but are stored in the index for future retrieval.*
+
+### Delete A Document
+
+Delete a document from the "default" index with an `id` of "1":
 
 ```php
 Search::delete(1);
 ```
 
-Working with multiple indicies
-------------------------------
+### Delete An Index
+
+```php
+Search::deleteIndex();
+```
+
+## Search Operations
+
+### Search For A Document
+
+Search the "default" index for documents who's `content` field contains the word "fox":
+
+```php
+$results = Search::search('content', 'fox')->get();
+```
+
+### Search More Than One Field
+
+```php
+$results = Search::search(array('title', 'content'), 'fox')->get();
+```
+
+### Search All Fields
+
+```php
+$results = Search::search(null, 'fox')->get();
+```
+
+### Apply A Filter To Your Query
+
+You can apply filters to your search queries as well. Filters attempt to match the value you specify as an entire "phrase". 
+
+```php
+$results = Search::search('content', 'fox')
+	->where('status', 'published')
+	->get();
+```
+
+*Note: Filters do not guarantee an exact match of the entire field value if the value contains multiple words.*
+
+### Limit Your Result Set
+
+```php
+$results = Search::search('content', 'fox')
+	->where('status', 'published')
+	->limit(10) // Limit 10
+	->get();
+
+$results = Search::search('content', 'fox')
+	->where('status', 'published')
+	->limit(10, 30) // Limit 10, offset 30
+	->get();
+```
+
+### Paginate Your Result Set
+
+You can also paginate your result set using a Laravel paginator instance.
+
+```php
+$paginator = Search::search('content', 'fox')->paginate(15);
+```
+
+### Limit The Fields You Want Back From The Response
+
+```php
+$results = Search::select('id', 'created_at')
+	->search('content', 'fox')
+	->get();
+```
+
+### Chain Multiple Searches And Filters
+
+```php
+$results = Search::select('id', 'created_at')
+	->where('title', 'My title')
+	->where('status', 'published')
+	->search('content', 'fox')
+	->search('content', 'quick')
+	->limit(10)
+	->get();
+```
+
+*Note: Chained filters/searches are constructed as boolean queries where each **must** provide a match.*
+
+### Delete All Documents That Match A Query
+
+```php
+Search::search('content', 'fox')->delete();
+```
+
+## Working With Multiple Indicies
 
 If you need to work with more than one index, you may access all of the same methods mentioned above after you specify the index name.
 
@@ -86,121 +197,38 @@ Add a document to an index called "posts":
 ```php
 Search::index('posts')->insert(1, array(
 	'title' => 'My title',
-	'content' => 'Some random content here...',
+	'content' => 'The quick brown fox...',
+	'status' => 'published',
 ));
 ```
 
-Add a document to an index called "posts" and store some extra parameters that can be returned from search results:
+Search the "posts" index for documents who's `content` field contains the word "fox" and who's `status` is "published":
 
 ```php
-Search::index('posts')->insert(
-	"postID-1",
-	array(
-		'title' => 'My title',
-		'content' => 'Some random content here...',
-	),
-	array(
-		'created_at' => date('Y-m-d H:i:s'),
-		'creator'    => 'Mark',
-	)
-);
-```
-
-*Note: extra parameters are not indexed but are stored in the index so they may be retrieved at a later point.*
-
-Search the "posts" index for documents who's `content` field contains the word 'random':
-
-```php
-$results = Search::index('posts')->search('content', 'random')->get();
-```
-
-Search more than one field:
-
-```php
-$results = Search::index('posts')->search(array('title', 'content'), 'random')->get();
-```
-
-Search all fields:
-
-```php
-$results = Search::index('posts')->search(null, 'random')->get();
-```
-
-Apply a filter to your query:
-
-```php
-$results = Search::index('posts')->search('content', 'random')
-	->where('title', 'My title')
+$results = Search::index('posts')->search('content', 'fox')
+	->where('status', 'published')
 	->get();
 ```
 
-*Note: filters attempt to match the value you specify as an entire "phrase". It does not guarantee an exact match of the entire field value.*
-
-Limit your result set:
+Delete a document from the "posts" index with an `id` of "1":
 
 ```php
-$results = Search::index('posts')->search('content', 'random')
-	->where('title', 'My title')
-	->limit(10) // Limit 10
-	->get();
-$results = Search::index('posts')->search('content', 'random')
-	->where('title', 'My title')
-	->limit(10, 30) // Limit 10, offset 30
-	->get();
+Search::index('posts')->delete(1);
 ```
 
-Paginate your result set:
-
-```php
-$paginator = Search::index('posts')->search('content', 'random')->paginate(15);
-```
-
-*Note: returns a Laravel paginator instance.*
-
-Limit the fields you want back from the response:
-
-```php
-$results = Search::index('posts')->select('id', 'created_at')
-	->search('content', 'random')
-	->get();
-```
-
-Delete all documents that match a given query:
-
-```php
-Search::index('posts')->search('content', 'random')
-	->where('title', 'My title')
-	->delete();
-```
-
-Chain multiple searches and filters:
-
-```php
-$results = Search::index('posts')->select('id', 'created_at')
-	->where('title', 'My title')
-	->where('creator', 'Mark')
-	->search('content', 'random')
-	->search('content', 'some')
-	->limit(10)
-	->get();
-```
-
-*Note: chained filters/searches are constructed as boolean searches where each __must__ provide a match.*
-
-Delete an entire index:
+Delete the entire "posts" index:
 
 ```php
 Search::index('posts')->deleteIndex();
 ```
 
-Advanced queries
-----------------
+## Advanced Query Callbacks
 
 If you need more control over a search query you may add a callback function which will be called after all conditions have been added to the query but before the query has been executed. You can then make changes to the native query instance and return it to be executed.
 
 ```php
 $results = Search::index('posts')->select('id', 'created_at')
-	->search('content', 'random')
+	->search('content', 'fox')
 	->addCallback(function ($query) {
 		// Make changes to $query...
 		return $query;
@@ -208,13 +236,13 @@ $results = Search::index('posts')->select('id', 'created_at')
 	->get();
 ```
 
-Since each driver has it's own native $query object/array, you may only want to execute your callback for one of the drivers:
+Since each driver has it's own native `$query` object/array, you may only want to execute your callback for one of the drivers:
 
 ```php
 $results = Search::index('posts')->select('id', 'created_at')
-	->search('content', 'random')
+	->search('content', 'fox')
 	->addCallback(function ($query) {
-		// Adjust pagination for an elasticsearch query.
+		// Adjust pagination for an elasticsearch query array.
 		$query['from'] = 0;
 		$query['size'] = 20;
 		return $query;
@@ -222,4 +250,4 @@ $results = Search::index('posts')->select('id', 'created_at')
 	->get();
 ```
 
-*Note: you may also pass an array of drivers as the second parameter.*
+*Note: You may also pass an array of drivers as the second parameter.*
