@@ -35,17 +35,17 @@ Add a class alias to `app/config/app.php`, within the `aliases` array.
 Publish the default config file to your application so you can make modifications.
 
 ```console
-php artisan config:publish mmanos/laravel-search
+$ php artisan config:publish mmanos/laravel-search
 ```
 
-### Dependencies
+#### Dependencies
 
 The following dependencies are needed for the listed search drivers:
 
 * ZendSearch: `zendframework/zendsearch`
 * Elasticsearch: `elasticsearch/elasticsearch`
 
-### Default Index
+#### Default Index
 
 This package provides a convenient syntax for working with a "default" index. Edit the `default_index` field in the config file to change this value. If you need to work with more than one index, see *Working With Multiple Indicies* below.
 
@@ -55,7 +55,7 @@ Indexing is very easy with this package. Simply provide a unique identifier for 
 
 The index will be **created automatically** if it does not exist the first time you access it.
 
-### Index A Document
+#### Index A Document
 
 Add a document to the "default" index with an `id` of "1".
 
@@ -67,9 +67,9 @@ Search::insert(1, array(
 ));
 ```
 
-*Note: `id` may be a string or an integer. This id is used to delete records and is also returned in search results.*
+> **Note:** `id` may be a string or an integer. This id is used to delete records and is also returned in search results.
 
-### Store Extra Parameters With A Document
+#### Store Extra Parameters With A Document
 
 You may store extra parameters with a document so they can be retrieved at a later point from search results. This can be useful for referencing timestamps or other record identifiers.
 
@@ -88,9 +88,9 @@ Search::insert(
 );
 ```
 
-*Note: Extra parameters are not indexed but are stored in the index for future retrieval.*
+> **Note:** Extra parameters are not indexed but are stored in the index for future retrieval.
 
-### Delete A Document
+#### Delete A Document
 
 Delete a document from the "default" index with an `id` of "1":
 
@@ -98,7 +98,7 @@ Delete a document from the "default" index with an `id` of "1":
 Search::delete(1);
 ```
 
-### Delete An Index
+#### Delete An Index
 
 ```php
 Search::deleteIndex();
@@ -106,7 +106,7 @@ Search::deleteIndex();
 
 ## Search Operations
 
-### Search For A Document
+#### Search For A Document
 
 Search the "default" index for documents who's `content` field contains the word "fox":
 
@@ -114,19 +114,19 @@ Search the "default" index for documents who's `content` field contains the word
 $results = Search::search('content', 'fox')->get();
 ```
 
-### Search More Than One Field
+#### Search More Than One Field
 
 ```php
 $results = Search::search(array('title', 'content'), 'fox')->get();
 ```
 
-### Search All Fields
+#### Search All Fields
 
 ```php
 $results = Search::search(null, 'fox')->get();
 ```
 
-### Apply A Filter To Your Query
+#### Apply A Filter To Your Query
 
 You can apply filters to your search queries as well. Filters attempt to match the value you specify as an entire "phrase". 
 
@@ -136,9 +136,9 @@ $results = Search::search('content', 'fox')
 	->get();
 ```
 
-*Note: Filters do not guarantee an exact match of the entire field value if the value contains multiple words.*
+> **Note:** Filters do not guarantee an exact match of the entire field value if the value contains multiple words.
 
-### Limit Your Result Set
+#### Limit Your Result Set
 
 ```php
 $results = Search::search('content', 'fox')
@@ -152,7 +152,7 @@ $results = Search::search('content', 'fox')
 	->get();
 ```
 
-### Paginate Your Result Set
+#### Paginate Your Result Set
 
 You can also paginate your result set using a Laravel paginator instance.
 
@@ -160,7 +160,7 @@ You can also paginate your result set using a Laravel paginator instance.
 $paginator = Search::search('content', 'fox')->paginate(15);
 ```
 
-### Limit The Fields You Want Back From The Response
+#### Limit The Fields You Want Back From The Response
 
 ```php
 $results = Search::select('id', 'created_at')
@@ -168,7 +168,7 @@ $results = Search::select('id', 'created_at')
 	->get();
 ```
 
-### Chain Multiple Searches And Filters
+#### Chain Multiple Searches And Filters
 
 ```php
 $results = Search::select('id', 'created_at')
@@ -180,9 +180,9 @@ $results = Search::select('id', 'created_at')
 	->get();
 ```
 
-*Note: Chained filters/searches are constructed as boolean queries where each **must** provide a match.*
+> **Note:** Chained filters/searches are constructed as boolean queries where each **must** provide a match.
 
-### Delete All Documents That Match A Query
+#### Delete All Documents That Match A Query
 
 ```php
 Search::search('content', 'fox')->delete();
@@ -250,4 +250,4 @@ $results = Search::index('posts')->select('id', 'created_at')
 	->get();
 ```
 
-*Note: You may also pass an array of drivers as the second parameter.*
+> **Note:** You may also pass an array of drivers as the second parameter.
