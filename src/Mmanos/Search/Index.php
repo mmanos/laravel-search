@@ -122,6 +122,7 @@ abstract class Index
 	 *                         - prohibited : must not match
 	 *                         - phrase     : match as a phrase
 	 *                         - filter     : filter results on value
+	 *                         - fuzzy      : fuzziness value (0 - 1)
 	 * 
 	 * @return mixed
 	 */

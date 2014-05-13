@@ -65,6 +65,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 *                         - prohibited : must not match
 	 *                         - phrase     : match as a phrase
 	 *                         - filter     : filter results on value
+	 *                         - fuzzy      : fuzziness value (0 - 1)
 	 * 
 	 * @return array
 	 */
@@ -76,24 +77,35 @@ class Elasticsearch extends \Mmanos\Search\Index
 		if (empty($field) || '*' === $field) {
 			$field = '_all';
 		}
+		$field = (array) $field;
 		
 		$occur = empty($condition['required']) ? 'should' : 'must';
 		$occur = empty($condition['prohibited']) ? $occur : 'must_not';
 		
-		$match_type = empty($condition['phrase']) ? 'match' : 'match_phrase';
-		$match_type = empty($condition['filter']) ? $match_type : 'match_phrase';
-		
-		if (is_array($field)) {
-			$is_phrase = ('match_phrase' == $match_type);
+		if (isset($condition['fuzzy']) && false !== $condition['fuzzy']) {
+			$fuzziness = .5;
+			if (is_numeric($condition['fuzzy'])
+				&& $condition['fuzzy'] >= 0
+				&& $condition['fuzzy'] <= 1
+			) {
+				$fuzziness = $condition['fuzzy'];
+			}
+			$match_type = 'fuzzy_like_this';
+			$definition = array(
+				'like_text'      => $value,
+				'fields'         => $field,
+				'prefix_length'  => 2,
+				'min_similarity' => $fuzziness,
+			);
+		}
+		else {
+			$is_phrase = (!empty($condition['phrase']) || !empty($condition['filter']));
 			$match_type = 'multi_match';
 			$definition = array(
 				'query'  => $value,
 				'fields' => $field,
-				"type"   => $is_phrase ? 'phrase' : 'best_fields',
+				'type'   => $is_phrase ? 'phrase' : 'best_fields',
 			);
-		}
-		else {
-			$definition = array($field => $value);
 		}
 		
 		$query['body']['query']['bool'][$occur][][$match_type] = $definition;

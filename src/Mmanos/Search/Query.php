@@ -105,6 +105,7 @@ class Query
 	 * @param array  $options - required   : requires a match (default)
 	 *                        - prohibited : requires a non-match
 	 *                        - phrase     : match the $value as a phrase
+	 *                        - fuzzy      : perform a fuzzy search (true, or numeric between 0-1)
 	 * 
 	 * @return \Mmanos\Search\Query
 	 */
@@ -116,6 +117,7 @@ class Query
 			'required'   => array_get($options, 'required', true),
 			'prohibited' => array_get($options, 'prohibited', false),
 			'phrase'     => array_get($options, 'phrase', false),
+			'fuzzy'      => array_get($options, 'fuzzy', null),
 		));
 		
 		return $this;

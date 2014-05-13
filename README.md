@@ -126,6 +126,16 @@ $results = Search::search(array('title', 'content'), 'fox')->get();
 $results = Search::search(null, 'fox')->get();
 ```
 
+#### Perform A Fuzzy Search
+
+Perform a fuzzy search to find results with similar, but not exact, spelling. For example, you want to return documents containing the word "updates" by searching for the word "update":
+
+```php
+$results = Search::search('content', 'update', array('fuzzy'=>true))->get();
+```
+
+> **Note:** You may also pass a numeric value between 0 and 1 for the fuzzy parameter, where a value closer to 1 requires a higher similarity. Defaults to 0.5.
+
 #### Apply A Filter To Your Query
 
 You can apply filters to your search queries as well. Filters attempt to match the value you specify as an entire "phrase". 

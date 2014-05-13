@@ -72,6 +72,7 @@ class Zend extends \Mmanos\Search\Index
 	 *                         - prohibited : must not match
 	 *                         - phrase     : match as a phrase
 	 *                         - filter     : filter results on value
+	 *                         - fuzzy      : fuzziness value (0 - 1)
 	 * 
 	 * @return \ZendSearch\Lucene\Search\Query\Boolean
 	 */
@@ -80,6 +81,21 @@ class Zend extends \Mmanos\Search\Index
 		$value = trim($this->escape(array_get($condition, 'value')));
 		if (array_get($condition, 'phrase') || array_get($condition, 'filter')) {
 			$value = '"' . $value . '"';
+		}
+		if (isset($condition['fuzzy']) && false !== $condition['fuzzy']) {
+			$fuzziness = '';
+			if (is_numeric($condition['fuzzy'])
+				&& $condition['fuzzy'] >= 0
+				&& $condition['fuzzy'] <= 1
+			) {
+				$fuzziness = $condition['fuzzy'];
+			}
+			
+			$words = array();
+			foreach (explode(' ', $value) as $word) {
+				$words[] = $word . '~' . $fuzziness;
+			}
+			$value = implode(' ', $words);
 		}
 		
 		$sign = null;
@@ -295,7 +311,7 @@ class Zend extends \Mmanos\Search\Index
 		$str = str_replace(':', '\:', $str);
 		
 		$str = str_ireplace(
-			array('and', 'or', 'not', 'to'),
+			array(' and ', ' or ', ' not ', ' to '),
 			'',
 			$str
 		);
