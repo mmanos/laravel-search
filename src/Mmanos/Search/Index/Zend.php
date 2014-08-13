@@ -5,6 +5,21 @@ use Config;
 class Zend extends \Mmanos\Search\Index
 {
 	/**
+	 * Create a new zend instance.
+	 *
+	 * @param string $name
+	 * @param string $driver
+	 * 
+	 * @return void
+	 */
+	public function __construct($name, $driver)
+	{
+		parent::__construct($name, $driver);
+		
+		\ZendSearch\Lucene\Search\QueryParser::setDefaultEncoding('UTF-8');
+	}
+	
+	/**
 	 * Instance of a ZendSearch lucene index.
 	 *
 	 * @var \ZendSearch\Lucene\Index
