@@ -17,8 +17,8 @@
         "elasticsearch/elasticsearch": "1.0.*@dev"
     },
     "suggest": {
-        "zendframework/zendsearch": "dev-master",
-        "elasticsearch/elasticsearch": "1.0.*@dev"
+        "zendframework/zendsearch": "Required for ZendSearch driver.",
+        "elasticsearch/elasticsearch": "Required for ElasticSearch driver."
     },
     "autoload": {
         "classmap": [
