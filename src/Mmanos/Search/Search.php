@@ -1,7 +1,5 @@
 <?php namespace Mmanos\Search;
 
-use Config;
-
 class Search
 {
 	/**
@@ -16,7 +14,7 @@ class Search
 	 *
 	 * @var array
 	 */
-	protected $indexes = array();
+	protected $indexes = [];
 	
 	/**
 	 * Create a new search instance.

@@ -1,7 +1,5 @@
 <?php namespace Mmanos\Search;
 
-use Config;
-
 abstract class Index
 {
 	/**
