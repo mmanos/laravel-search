@@ -162,14 +162,6 @@ $results = Search::search('content', 'fox')
 	->get();
 ```
 
-#### Paginate Your Result Set
-
-You can also paginate your result set using a Laravel paginator instance.
-
-```php
-$paginator = Search::search('content', 'fox')->paginate(15);
-```
-
 #### Limit The Fields You Want Back From The Response
 
 ```php
