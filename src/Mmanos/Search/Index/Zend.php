@@ -1,7 +1,5 @@
 <?php namespace Mmanos\Search\Index;
 
-use Config;
-
 class Zend extends \Mmanos\Search\Index
 {
 	/**
@@ -31,7 +29,7 @@ class Zend extends \Mmanos\Search\Index
 	 *
 	 * @var array
 	 */
-	protected $stored_query_totals = array();
+	protected $stored_query_totals = [];
 	
 	/**
 	 * Get the ZendSearch lucene index instance associated with this instance.
@@ -41,7 +39,7 @@ class Zend extends \Mmanos\Search\Index
 	protected function getIndex()
 	{
 		if (!$this->index) {
-			$path = rtrim(Config::get('laravel-search::connections.zend.path'), '/') . '/' . $this->name;
+			$path = rtrim(config('search.connections.zend.path'), '/') . '/' . $this->name;
 			
 			try {
 				$this->index = \ZendSearch\Lucene\Lucene::open($path);
@@ -51,7 +49,7 @@ class Zend extends \Mmanos\Search\Index
 				if (!file_exists($path)) {
 					throw new \Exception(
 						"'path' directory does not exist for the 'zend' search driver: '"
-						. rtrim(Config::get('laravel-search::connections.zend.path'), '/')
+						. rtrim(config('search.connections.zend.path'), '/')
 						. "'"
 					);
 				}
@@ -106,7 +104,7 @@ class Zend extends \Mmanos\Search\Index
 				$fuzziness = $condition['fuzzy'];
 			}
 			
-			$words = array();
+			$words = [];
 			foreach (explode(' ', $value) as $word) {
 				$words[] = $word . '~' . $fuzziness;
 			}
@@ -127,7 +125,7 @@ class Zend extends \Mmanos\Search\Index
 		}
 		
 		if (is_array($field)) {
-			$values = array();
+			$values = [];
 			foreach ($field as $f) {
 				$values[] = trim($f) . ':(' . $value . ')';
 			}
@@ -156,13 +154,13 @@ class Zend extends \Mmanos\Search\Index
 	 * 
 	 * @return array
 	 */
-	public function runQuery($query, array $options = array())
+	public function runQuery($query, array $options = [])
 	{
 		$response = $this->getIndex()->find($query);
 		
 		$this->stored_query_totals[md5(serialize($query))] = count($response);
 		
-		$results = array();
+		$results = [];
 		
 		if (!empty($response)) {
 			foreach ($response as $hit) {
@@ -211,7 +209,7 @@ class Zend extends \Mmanos\Search\Index
 	 * 
 	 * @return bool
 	 */
-	public function insert($id, array $fields, array $parameters = array())
+	public function insert($id, array $fields, array $parameters = [])
 	{
 		// Remove any existing documents.
 		$this->delete($id);
@@ -265,7 +263,7 @@ class Zend extends \Mmanos\Search\Index
 	 */
 	public function deleteIndex()
 	{
-		$path = rtrim(Config::get('laravel-search::connections.zend.path'), '/') . '/' . $this->name;
+		$path = rtrim(config('search.connections.zend.path'), '/') . '/' . $this->name;
 		if (!file_exists($path) || !is_dir($path)) {
 			return false;
 		}

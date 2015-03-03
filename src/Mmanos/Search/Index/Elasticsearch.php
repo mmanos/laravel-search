@@ -1,7 +1,5 @@
 <?php namespace Mmanos\Search\Index;
 
-use Config;
-
 class Elasticsearch extends \Mmanos\Search\Index
 {
 	/**
@@ -23,7 +21,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 *
 	 * @var array
 	 */
-	protected $stored_query_totals = array();
+	protected $stored_query_totals = [];
 	
 	/**
 	 * Get the Elasticsearch client associated with this instance.
@@ -34,7 +32,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	{
 		if (!static::$client) {
 			static::$client = new \Elasticsearch\Client(
-				Config::get('laravel-search::connections.elasticsearch.config', array())
+				config('search.connections.elasticsearch.config', [])
 			);
 		}
 		
@@ -50,7 +48,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	{
 		return array(
 			'index' => $this->name,
-			'body'  => array('query' => array('bool' => array())),
+			'body'  => array('query' => array('bool' => [])),
 		);
 	}
 	
@@ -127,7 +125,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 * 
 	 * @return array
 	 */
-	public function runQuery($query, array $options = array())
+	public function runQuery($query, array $options = [])
 	{
 		$original_query = $query;
 		
@@ -140,10 +138,10 @@ class Elasticsearch extends \Mmanos\Search\Index
 			$response = $this->getClient()->search($query);
 			$this->stored_query_totals[md5(serialize($original_query))] = array_get($response, 'hits.total');
 		} catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
-			$response = array();
+			$response = [];
 		}
 		
-		$results = array();
+		$results = [];
 		
 		if (array_get($response, 'hits.hits')) {
 			foreach (array_get($response, 'hits.hits') as $hit) {
@@ -152,7 +150,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 						'id'     => array_get($hit, '_id'),
 						'_score' => array_get($hit, '_score'),
 					),
-					json_decode(base64_decode(array_get($hit, '_source._parameters', array())), true)
+					json_decode(base64_decode(array_get($hit, '_source._parameters', [])), true)
 				);
 			}
 		}
@@ -192,7 +190,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 * 
 	 * @return bool
 	 */
-	public function insert($id, array $fields, array $parameters = array())
+	public function insert($id, array $fields, array $parameters = [])
 	{
 		$this->delete($id);
 		

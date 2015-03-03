@@ -23,7 +23,7 @@ class Query
 	 *
 	 * @var array
 	 */
-	protected $conditions = array();
+	protected $conditions = [];
 	
 	/**
 	 * The columns that should be returned.
@@ -52,7 +52,7 @@ class Query
 	 *
 	 * @var array
 	 */
-	protected $callbacks = array();
+	protected $callbacks = [];
 	
 	/**
 	 * Flag to remember if callbacks have already been executed.
@@ -109,7 +109,7 @@ class Query
 	 * 
 	 * @return \Mmanos\Search\Query
 	 */
-	public function search($field, $value, array $options = array())
+	public function search($field, $value, array $options = [])
 	{
 		$this->query = $this->index->addConditionToQuery($this->query, array(
 			'field'      => $field,
@@ -232,7 +232,7 @@ class Query
 	 */
 	public function get()
 	{
-		$options = array();
+		$options = [];
 		if ($this->limit) {
 			$options['limit'] = $this->limit;
 			$options['offset'] = $this->offset;
@@ -243,9 +243,9 @@ class Query
 		$results = $this->index->runQuery($this->query, $options);
 		
 		if ($this->columns && !in_array('*', $this->columns)) {
-			$new_results = array();
+			$new_results = [];
 			foreach ($results as $result) {
-				$new_result = array();
+				$new_result = [];
 				foreach ($this->columns as $field) {
 					if (array_key_exists($field, $result)) {
 						$new_result[$field] = $result[$field];
