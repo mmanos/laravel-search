@@ -21,9 +21,6 @@
         "elasticsearch/elasticsearch": "Required for ElasticSearch driver."
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
             "Mmanos\\Search\\": "src/"
         }
