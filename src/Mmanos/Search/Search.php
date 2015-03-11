@@ -1,7 +1,5 @@
 <?php namespace Mmanos\Search;
 
-use Config;
-
 class Search
 {
 	/**
@@ -16,7 +14,7 @@ class Search
 	 *
 	 * @var array
 	 */
-	protected $indexes = array();
+	protected $indexes = [];
 	
 	/**
 	 * Create a new search instance.
@@ -28,7 +26,7 @@ class Search
 	public function __construct($driver = null)
 	{
 		if (null === $driver) {
-			$driver = Config::get('laravel-search::default', 'zend');
+			$driver = config('search.default', 'zend');
 		}
 		
 		$this->driver = $driver;
@@ -45,7 +43,7 @@ class Search
 	public function index($index = null)
 	{
 		if (null === $index) {
-			$index = Config::get('laravel-search::default_index', 'default');
+			$index = config('search.default_index', 'default');
 		}
 		
 		if (!isset($this->indexes[$index])) {

@@ -10,50 +10,50 @@ class Query
 	 * @var \Mmanos\Search\Index
 	 */
 	protected $index;
-	
+
 	/**
 	 * The raw query used by the current search index driver.
 	 *
 	 * @var mixed
 	 */
 	protected $query;
-	
+
 	/**
 	 * The search conditions for the query.
 	 *
 	 * @var array
 	 */
-	protected $conditions = array();
-	
+	protected $conditions = [];
+
 	/**
 	 * The columns that should be returned.
 	 *
 	 * @var array
 	 */
 	protected $columns;
-	
+
 	/**
 	 * The maximum number of records to return.
 	 *
 	 * @var int
 	 */
 	protected $limit;
-	
+
 	/**
 	 * The number of records to skip.
 	 *
 	 * @var int
 	 */
 	protected $offset;
-	
+
 	/**
 	 * Any user defined callback functions to help manipulate the raw
 	 * query instance.
 	 *
 	 * @var array
 	 */
-	protected $callbacks = array();
-	
+	protected $callbacks = [];
+
 	/**
 	 * Flag to remember if callbacks have already been executed.
 	 * Prevents multiple executions.
@@ -61,12 +61,12 @@ class Query
 	 * @var bool
 	 */
 	protected $callbacks_executed = false;
-	
+
 	/**
 	 * Create a new search query builder instance.
 	 *
 	 * @param \Mmanos\Search\Index $index
-	 * 
+	 *
 	 * @return void
 	 */
 	public function __construct($index)
@@ -74,7 +74,7 @@ class Query
 		$this->index = $index;
 		$this->query = $this->index->newQuery();
 	}
-	
+
 	/**
 	 * Add a basic where clause to the query. A where clause filter attemtps
 	 * to match the value you specify as an entire "phrase". It does not
@@ -82,7 +82,7 @@ class Query
 	 *
 	 * @param string $field
 	 * @param mixed  $value
-	 * 
+	 *
 	 * @return \Mmanos\Search\Query
 	 */
 	public function where($field, $value)
@@ -93,10 +93,10 @@ class Query
 			'required' => true,
 			'filter'   => true,
 		));
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Add a basic search clause to the query.
 	 *
@@ -106,29 +106,29 @@ class Query
 	 *                        - prohibited : requires a non-match
 	 *                        - phrase     : match the $value as a phrase
 	 *                        - fuzzy      : perform a fuzzy search (true, or numeric between 0-1)
-	 * 
+	 *
 	 * @return \Mmanos\Search\Query
 	 */
-	public function search($field, $value, array $options = array())
+	public function search($field, $value, array $options = [])
 	{
-		$this->query = $this->index->addConditionToQuery($this->query, array(
+		$this->query = $this->index->addConditionToQuery($this->query, [
 			'field'      => $field,
 			'value'      => $value,
 			'required'   => array_get($options, 'required', true),
 			'prohibited' => array_get($options, 'prohibited', false),
 			'phrase'     => array_get($options, 'phrase', false),
 			'fuzzy'      => array_get($options, 'fuzzy', null),
-		));
-		
+		]);
+
 		return $this;
 	}
-	
+
 	/**
 	 * Add a custom callback fn to be called just before the query is executed.
 	 *
 	 * @param Closure      $callback
 	 * @param array|string $driver
-	 * 
+	 *
 	 * @return \Mmanos\Search\Query
 	 */
 	public function addCallback($callback, $driver = null)
@@ -143,42 +143,42 @@ class Query
 				return $this;
 			}
 		}
-		
+
 		$this->callbacks[] = $callback;
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Set the columns to be selected.
 	 *
 	 * @param array $columns
-	 * 
+	 *
 	 * @return \Mmanos\Search\Query
 	 */
-	public function select($columns = array('*'))
+	public function select($columns = ['*'])
 	{
 		$this->columns = is_array($columns) ? $columns : func_get_args();
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Set the "limit" and "offset" value of the query.
 	 *
 	 * @param int $limit
 	 * @param int $offset
-	 * 
+	 *
 	 * @return \Mmanos\Search\Query
 	 */
 	public function limit($limit, $offset = 0)
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Execute the current query and perform delete operations on each
 	 * document found.
@@ -189,30 +189,30 @@ class Query
 	{
 		$this->columns = null;
 		$results = $this->get();
-		
+
 		foreach ($results as $result) {
 			$this->index->delete(array_get($result, 'id'));
 		}
 	}
-	
+
 	/**
-	 * Execute the current query and return a paginator for the results.
-	 *
-	 * @param int $num
-	 * 
-	 * @return \Illuminate\Pagination\Paginator
-	 */
+	* Execute the current query and return a paginator for the results.
+	*
+	* @param int $num
+	*
+	* @return \Illuminate\Pagination\Paginator
+	*/
 	public function paginate($num = 15)
 	{
 		$paginator = App::make('paginator');
-		
+
 		$page = (int) Input::get('page', 1);
-		
+
 		$this->limit($num, ($page - 1) * $num);
-		
+
 		return $paginator->make($this->get(), $this->count(), $num);
 	}
-	
+
 	/**
 	 * Execute the current query and return the total number of results.
 	 *
@@ -221,10 +221,10 @@ class Query
 	public function count()
 	{
 		$this->executeCallbacks();
-		
+
 		return $this->index->runCount($this->query);
 	}
-	
+
 	/**
 	 * Execute the current query and return the results.
 	 *
@@ -232,20 +232,20 @@ class Query
 	 */
 	public function get()
 	{
-		$options = array();
+		$options = [];
 		if ($this->limit) {
 			$options['limit'] = $this->limit;
 			$options['offset'] = $this->offset;
 		}
-		
+
 		$this->executeCallbacks();
-		
+
 		$results = $this->index->runQuery($this->query, $options);
-		
+
 		if ($this->columns && !in_array('*', $this->columns)) {
-			$new_results = array();
+			$new_results = [];
 			foreach ($results as $result) {
-				$new_result = array();
+				$new_result = [];
 				foreach ($this->columns as $field) {
 					if (array_key_exists($field, $result)) {
 						$new_result[$field] = $result[$field];
@@ -255,10 +255,10 @@ class Query
 			}
 			$results = $new_results;
 		}
-		
+
 		return $results;
 	}
-	
+
 	/**
 	 * Execute any callback functions. Only execute once.
 	 *
@@ -269,9 +269,9 @@ class Query
 		if ($this->callbacks_executed) {
 			return;
 		}
-		
+
 		$this->callbacks_executed = true;
-		
+
 		foreach ($this->callbacks as $callback) {
 			if ($q = call_user_func($callback, $this->query)) {
 				$this->query = $q;

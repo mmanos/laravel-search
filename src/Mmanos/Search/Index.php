@@ -1,7 +1,5 @@
 <?php namespace Mmanos\Search;
 
-use Config;
-
 abstract class Index
 {
 	/**
@@ -44,7 +42,7 @@ abstract class Index
 	public static function factory($index, $driver = null)
 	{
 		if (null === $driver) {
-			$driver = Config::get('laravel-search::default', 'zend');
+			$driver = config('search.default', 'zend');
 		}
 		
 		switch ($driver) {
