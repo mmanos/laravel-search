@@ -34,7 +34,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	{
 		if (!static::$client) {
 			static::$client = new \Elasticsearch\Client(
-				Config::get('laravel-search::connections.elasticsearch.config', array())
+				Config::get('search.connections.elasticsearch.config', array())
 			);
 		}
 		
