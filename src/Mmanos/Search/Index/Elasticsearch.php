@@ -74,6 +74,11 @@ class Elasticsearch extends \Mmanos\Search\Index
 		$value = trim(array_get($condition, 'value'));
 		$field = array_get($condition, 'field', '_all');
 		
+		if ($field && 'xref_id' == $field) {
+			$query['id'] = $value;
+			return $query;
+		}
+		
 		if (empty($field) || '*' === $field) {
 			$field = '_all';
 		}
@@ -136,6 +141,32 @@ class Elasticsearch extends \Mmanos\Search\Index
 			$query['size'] = $options['limit'];
 		}
 		
+		if (isset($query['id'])) {
+			try {
+				$response = $this->getClient()->get(array(
+					'index' => array_get($query, 'index'),
+					'type'  => static::$default_type,
+					'id'    => array_get($query, 'id'),
+				));
+			} catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
+				$response = array();
+			}
+			
+			if (empty($response)) {
+				$this->stored_query_totals[md5(serialize($original_query))] = 0;
+				return array();
+			}
+			
+			$this->stored_query_totals[md5(serialize($original_query))] = 1;
+			
+			return array(array_merge(
+				array(
+					'id' => array_get($response, '_id'),
+				),
+				json_decode(base64_decode(array_get($response, '_source._parameters', array())), true)
+			));
+		}
+		
 		try {
 			$response = $this->getClient()->search($query);
 			$this->stored_query_totals[md5(serialize($original_query))] = array_get($response, 'hits.total');
@@ -194,7 +225,9 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 */
 	public function insert($id, array $fields, array $parameters = array())
 	{
-		$this->delete($id);
+		try {
+			$this->delete($id);
+		} catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {}
 		
 		$fields['_parameters'] = base64_encode(json_encode($parameters));
 		
