@@ -1,4 +1,4 @@
-# Search Package for Laravel 4
+# Search Package for Laravel 5
 
 This package provides a unified API across a variety of different full text search services. It currently supports drivers for [Elasticsearch](http://www.elasticsearch.org/) and [ZendSearch](https://github.com/zendframework/ZendSearch) (good for local use).
 
@@ -35,7 +35,7 @@ Add a class alias to `app/config/app.php`, within the `aliases` array.
 Publish the default config file to your application so you can make modifications.
 
 ```console
-$ php artisan config:publish mmanos/laravel-search
+$ php artisan vendor:publish
 ```
 
 #### Dependencies

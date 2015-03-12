@@ -1,6 +1,6 @@
 {
     "name": "mmanos/laravel-search",
-    "description": "A search package for Laravel 4.",
+    "description": "A search package for Laravel 5.",
     "keywords": ["laravel", "search", "lucene", "zendsearch", "elasticsearch", "full", "text"],
     "authors": [
         {
@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.*"
+        "illuminate/support": "~5.0"
     },
     "require-dev": {
         "zendframework/zendsearch": "dev-master",
@@ -21,9 +21,6 @@
         "elasticsearch/elasticsearch": "Required for ElasticSearch driver."
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
             "Mmanos\\Search\\": "src/"
         }

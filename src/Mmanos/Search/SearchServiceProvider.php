@@ -5,20 +5,15 @@ use Illuminate\Support\ServiceProvider;
 class SearchServiceProvider extends ServiceProvider {
 
 	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
-
-	/**
 	 * Bootstrap the application events.
 	 *
 	 * @return void
 	 */
 	public function boot()
 	{
-		$this->package('mmanos/laravel-search');
+		$this->publishes([
+			__DIR__.'/../../config/search.php' => config_path('search.php')
+		]);
 	}
 
 	/**
@@ -28,19 +23,9 @@ class SearchServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bindShared('search', function ($app) {
-			return new \Mmanos\Search\Search;
+		$this->app->bind('search', function ($app) {
+			return new \Mmanos\Search\Search();
 		});
-	}
-
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array();
 	}
 
 }

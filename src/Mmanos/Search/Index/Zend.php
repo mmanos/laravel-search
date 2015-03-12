@@ -41,7 +41,7 @@ class Zend extends \Mmanos\Search\Index
 	protected function getIndex()
 	{
 		if (!$this->index) {
-			$path = rtrim(Config::get('laravel-search::connections.zend.path'), '/') . '/' . $this->name;
+			$path = rtrim(Config::get('search.connections.zend.path'), '/') . '/' . $this->name;
 			
 			try {
 				$this->index = \ZendSearch\Lucene\Lucene::open($path);
@@ -51,7 +51,7 @@ class Zend extends \Mmanos\Search\Index
 				if (!file_exists($path)) {
 					throw new \Exception(
 						"'path' directory does not exist for the 'zend' search driver: '"
-						. rtrim(Config::get('laravel-search::connections.zend.path'), '/')
+						. rtrim(Config::get('search.connections.zend.path'), '/')
 						. "'"
 					);
 				}
@@ -265,7 +265,7 @@ class Zend extends \Mmanos\Search\Index
 	 */
 	public function deleteIndex()
 	{
-		$path = rtrim(Config::get('laravel-search::connections.zend.path'), '/') . '/' . $this->name;
+		$path = rtrim(Config::get('search.connections.zend.path'), '/') . '/' . $this->name;
 		if (!file_exists($path) || !is_dir($path)) {
 			return false;
 		}
