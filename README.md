@@ -30,6 +30,10 @@ Add a class alias to `app/config/app.php`, within the `aliases` array.
 )
 ```
 
+## Laravel 4
+
+Use the `0.0` branch or the `v0.*` tags for Laravel 4 support.
+
 ## Configuration
 
 Publish the default config file to your application so you can make modifications.
