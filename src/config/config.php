@@ -11,7 +11,7 @@ return array(
 	| API, giving you convenient access to each back-end using the same
 	| syntax for each one. Here you may set the default search driver.
 	|
-	| Supported: "zend", "elasticsearch"
+	| Supported: "zend", "elasticsearch", "algolia"
 	|
 	*/
 
@@ -50,6 +50,14 @@ return array(
 			'driver' => 'elasticsearch',
 			'config' => array(
 				'hosts' => array('localhost:9200'),
+			),
+		),
+
+		'algolia' => array(
+			'driver' => 'algolia',
+			'config' => array(
+				'application_id' => '',
+				'admin_api_key'  => '',
 			),
 		),
 

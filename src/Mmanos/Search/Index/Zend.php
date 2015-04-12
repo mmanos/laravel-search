@@ -93,6 +93,10 @@ class Zend extends \Mmanos\Search\Index
 	 */
 	public function addConditionToQuery($query, array $condition)
 	{
+		if (array_get($condition, 'lat')) {
+			return $query;
+		}
+		
 		$value = trim($this->escape(array_get($condition, 'value')));
 		if (array_get($condition, 'phrase') || array_get($condition, 'filter')) {
 			$value = '"' . $value . '"';
@@ -224,6 +228,7 @@ class Zend extends \Mmanos\Search\Index
 		
 		// Add fields to document to be indexed (but not stored).
 		foreach ($fields as $field => $value) {
+			if (is_array($value)) continue;
 			$doc->addField(\ZendSearch\Lucene\Document\Field::unStored(trim($field), trim($value)));
 		}
 		

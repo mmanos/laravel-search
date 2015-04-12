@@ -71,6 +71,10 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 */
 	public function addConditionToQuery($query, array $condition)
 	{
+		if (array_get($condition, 'lat')) {
+			return $query;
+		}
+		
 		$value = trim(array_get($condition, 'value'));
 		$field = array_get($condition, 'field', '_all');
 		

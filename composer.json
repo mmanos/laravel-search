@@ -1,7 +1,7 @@
 {
     "name": "mmanos/laravel-search",
     "description": "A search package for Laravel 4.",
-    "keywords": ["laravel", "search", "lucene", "zendsearch", "elasticsearch", "full", "text"],
+    "keywords": ["laravel", "search", "lucene", "zendsearch", "elasticsearch", "algolia", "full", "text"],
     "authors": [
         {
             "name": "Mark Manos",
@@ -14,11 +14,13 @@
     },
     "require-dev": {
         "zendframework/zendsearch": "dev-master",
-        "elasticsearch/elasticsearch": "1.0.*@dev"
+        "elasticsearch/elasticsearch": "1.0.*@dev",
+        "algolia/algoliasearch-client-php": "1.1.*"
     },
     "suggest": {
         "zendframework/zendsearch": "Required for ZendSearch driver.",
-        "elasticsearch/elasticsearch": "Required for ElasticSearch driver."
+        "elasticsearch/elasticsearch": "Required for ElasticSearch driver.",
+        "algolia/algoliasearch-client-php": "Required for Algolia driver."
     },
     "autoload": {
         "classmap": [

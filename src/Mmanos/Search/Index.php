@@ -48,6 +48,9 @@ abstract class Index
 		}
 		
 		switch ($driver) {
+			case 'algolia':
+				return new Index\Algolia($index, 'algolia');
+				
 			case 'elasticsearch':
 				return new Index\Elasticsearch($index, 'elasticsearch');
 				
@@ -70,6 +73,22 @@ abstract class Index
 	{
 		$query = new Query($this);
 		return $query->where($field, $value);
+	}
+	
+	/**
+	 * Initialize and return a new Query instance on this index
+	 * with the requested geo distance where clause.
+	 *
+	 * @param float $lat
+	 * @param float $long
+	 * @param int   $distance_in_meters
+	 * 
+	 * @return \Mmanos\Search\Query
+	 */
+	public function whereLocation($lat, $long, $distance_in_meters = 10000)
+	{
+		$query = new Query($this);
+		return $query->whereLocation($lat, $long, $distance_in_meters);
 	}
 	
 	/**
