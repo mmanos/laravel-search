@@ -98,6 +98,26 @@ class Query
 	}
 	
 	/**
+	 * Add a geo distance where clause to the query.
+	 *
+	 * @param float $lat
+	 * @param float $long
+	 * @param int   $distance_in_meters
+	 * 
+	 * @return \Mmanos\Search\Query
+	 */
+	public function whereLocation($lat, $long, $distance_in_meters = 10000)
+	{
+		$this->query = $this->index->addConditionToQuery($this->query, array(
+			'lat'      => $lat,
+			'long'     => $long,
+			'distance' => $distance_in_meters,
+		));
+		
+		return $this;
+	}
+	
+	/**
 	 * Add a basic search clause to the query.
 	 *
 	 * @param string $field

@@ -1,6 +1,6 @@
 # Search Package for Laravel 5
 
-This package provides a unified API across a variety of different full text search services. It currently supports drivers for [Elasticsearch](http://www.elasticsearch.org/) and [ZendSearch](https://github.com/zendframework/ZendSearch) (good for local use).
+This package provides a unified API across a variety of different full text search services. It currently supports drivers for [Elasticsearch](http://www.elasticsearch.org/), [Algolia](https://www.algolia.com/), and [ZendSearch](https://github.com/zendframework/ZendSearch) (good for local use).
 
 ## Installation Via Composer
 
@@ -48,6 +48,7 @@ The following dependencies are needed for the listed search drivers:
 
 * ZendSearch: `zendframework/zendsearch`
 * Elasticsearch: `elasticsearch/elasticsearch`
+* Algolia: `algolia/algoliasearch-client-php`
 
 #### Default Index
 
@@ -151,6 +152,20 @@ $results = Search::search('content', 'fox')
 ```
 
 > **Note:** Filters do not guarantee an exact match of the entire field value if the value contains multiple words.
+
+#### Geo-Search
+
+Some drivers support location-aware searching:
+
+```php
+$results = Search::search('content', 'fox')
+	->whereLocation(36.16781, -96.023561, 10000)
+	->get();
+```
+
+Where the parameters are `latitude`, `longitude`, and `distance` (in meters).
+
+> **Note:** Currently, only the `algolia` driver supports geo-searching. Ensure each indexed record contains the location information: `_geoloc => ['lat' => 1.23, 'lng' => 1.23]`.
 
 #### Limit Your Result Set
 
