@@ -34,8 +34,8 @@ class Algolia extends \Mmanos\Search\Index
 	{
 		if (!static::$client) {
 			static::$client = new \AlgoliaSearch\Client(
-				Config::get('laravel-search::connections.algolia.config.application_id'),
-				Config::get('laravel-search::connections.algolia.config.admin_api_key')
+				Config::get('search.connections.algolia.config.application_id'),
+				Config::get('search.connections.algolia.config.admin_api_key')
 			);
 		}
 		
