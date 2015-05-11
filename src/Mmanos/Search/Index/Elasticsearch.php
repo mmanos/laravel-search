@@ -233,7 +233,9 @@ class Elasticsearch extends \Mmanos\Search\Index
 			$this->delete($id);
 		} catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {}
 		
-		$fields['_parameters'] = base64_encode(json_encode($parameters));
+		if (!empty($parameters)) {
+			$fields['_parameters'] = base64_encode(json_encode($parameters));
+		}
 		
 		$this->getClient()->index(array(
 			'index' => $this->name,
