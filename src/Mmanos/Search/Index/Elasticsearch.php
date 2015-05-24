@@ -163,11 +163,20 @@ class Elasticsearch extends \Mmanos\Search\Index
 			
 			$this->stored_query_totals[md5(serialize($original_query))] = 1;
 			
+			$parameters = array_get($response, '_source._parameters');
+			
+			if (!empty($parameters)) {
+				$parameters = json_decode(base64_decode($parameters), true);
+			}
+			else {
+				$parameters = array();
+			}
+			
 			return array(array_merge(
 				array(
 					'id' => array_get($response, '_id'),
 				),
-				json_decode(base64_decode(array_get($response, '_source._parameters', array())), true)
+				$parameters
 			));
 		}
 		
@@ -182,12 +191,21 @@ class Elasticsearch extends \Mmanos\Search\Index
 		
 		if (array_get($response, 'hits.hits')) {
 			foreach (array_get($response, 'hits.hits') as $hit) {
+				$parameters = array_get($hit, '_source._parameters');
+				
+				if (!empty($parameters)) {
+					$parameters = json_decode(base64_decode($parameters), true);
+				}
+				else {
+					$parameters = array();
+				}
+				
 				$results[] = array_merge(
 					array(
 						'id'     => array_get($hit, '_id'),
 						'_score' => array_get($hit, '_score'),
 					),
-					json_decode(base64_decode(array_get($hit, '_source._parameters', array())), true)
+					$parameters
 				);
 			}
 		}
