@@ -50,7 +50,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	{
 		return array(
 			'index' => $this->name,
-			'body'  => array('query' => array('bool' => array())),
+			'body'  => array('query' => array()),
 		);
 	}
 	
@@ -71,10 +71,6 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 */
 	public function addConditionToQuery($query, array $condition)
 	{
-		if (array_get($condition, 'lat')) {
-			return $query;
-		}
-		
 		$value = trim(array_get($condition, 'value'));
 		$field = array_get($condition, 'field', '_all');
 		
@@ -107,6 +103,19 @@ class Elasticsearch extends \Mmanos\Search\Index
 				'min_similarity' => $fuzziness,
 			);
 		}
+		elseif (array_get($condition, 'lat')) {
+			$definition = array(
+				'distance' => $condition['distance'].'m',
+				'_geoloc' => array(
+					'lat' => $condition['lat'],
+					'lon' => $condition['long'],
+				),
+			);
+
+			$query['body']['query']['filtered']['filter']['geo_distance'] = $definition;
+
+			return $query;
+		}
 		else {
 			$is_phrase = (!empty($condition['phrase']) || !empty($condition['filter']));
 			$match_type = 'multi_match';
@@ -117,7 +126,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 			);
 		}
 		
-		$query['body']['query']['bool'][$occur][][$match_type] = $definition;
+		$query['body']['query']['filtered']['query']['bool'][$occur][][$match_type] = $definition;
 		
 		return $query;
 	}
