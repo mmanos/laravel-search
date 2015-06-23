@@ -130,6 +130,15 @@ abstract class Index
 	}
 	
 	/**
+	 * Create the index.
+	 *
+	 * @param array $fields
+	 *
+	 * @return bool
+	 */
+	abstract public function createIndex(array $fields = array());
+	
+	/**
 	 * Get a new query instance from the driver.
 	 *
 	 * @return mixed
