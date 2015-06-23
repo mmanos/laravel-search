@@ -42,6 +42,31 @@ class Elasticsearch extends \Mmanos\Search\Index
 	}
 	
 	/**
+	 * Create the index.
+	 *
+	 * @param array $fields
+	 *
+	 * @return bool
+	 */
+	public function createIndex(array $fields = array())
+	{
+		$properties = array('_geoloc' => array('type' => 'geo_point'));
+		
+		foreach ($fields as $field) {
+			$properties[$field] = array('type' => 'string');
+		}
+		
+		$body['mappings'][static::$default_type]['properties'] = $properties;
+		
+		$this->getClient()->indices()->create(array(
+			'index' => $this->name,
+			'body'  => $body,
+		));
+		
+		return true;
+	}
+	
+	/**
 	 * Get a new query instance from the driver.
 	 *
 	 * @return array

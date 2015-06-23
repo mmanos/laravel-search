@@ -32,6 +32,18 @@ class Zend extends \Mmanos\Search\Index
 	 * @var array
 	 */
 	protected $stored_query_totals = array();
+
+	/**
+	 * Create the index.
+	 *
+	 * @param array $fields
+	 *
+	 * @return bool
+	 */
+	public function createIndex(array $fields = array())
+	{
+		return false;
+	}
 	
 	/**
 	 * Get the ZendSearch lucene index instance associated with this instance.
