@@ -173,6 +173,10 @@ class Elasticsearch extends \Mmanos\Search\Index
 	public function runQuery($query, array $options = array())
 	{
 		$original_query = $query;
+
+		if (isset($options['columns']) && !in_array('*', $options['columns'])) {
+			$query['_source'] = $options['columns'];
+		}
 		
 		if (isset($options['limit']) && isset($options['offset'])) {
 			$query['from'] = $options['offset'];
