@@ -248,6 +248,10 @@ class Zend extends \Mmanos\Search\Index
 		
 		// Add fields to document to be indexed and stored.
 		foreach ($fields as $field => $value) {
+			if (is_array($value)) {
+				$value = implode(' ', $value);
+			}
+			
 			$doc->addField(\ZendSearch\Lucene\Document\Field::text(trim($field), trim($value)));
 		}
 		
