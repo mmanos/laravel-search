@@ -253,6 +253,11 @@ class Query
 	public function get()
 	{
 		$options = array();
+
+		if ($this->columns) {
+			$options['columns'] = $this->columns;
+		}
+		
 		if ($this->limit) {
 			$options['limit'] = $this->limit;
 			$options['offset'] = $this->offset;
