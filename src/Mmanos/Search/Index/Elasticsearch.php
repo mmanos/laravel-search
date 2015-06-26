@@ -225,6 +225,16 @@ class Elasticsearch extends \Mmanos\Search\Index
 		
 		if (array_get($response, 'hits.hits')) {
 			foreach (array_get($response, 'hits.hits') as $hit) {
+				$fields = array(
+					'id'     => array_get($hit, '_id'),
+					'_score' => array_get($hit, '_score'),
+				);
+				$source = array_get($hit, '_source', array());
+
+				foreach ($source as $name => $value) {
+					$fields[$name] = $value;
+				}
+
 				$parameters = array_get($hit, '_source._parameters');
 				
 				if (!empty($parameters)) {
@@ -234,13 +244,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 					$parameters = array();
 				}
 				
-				$results[] = array_merge(
-					array(
-						'id'     => array_get($hit, '_id'),
-						'_score' => array_get($hit, '_score'),
-					),
-					$parameters
-				);
+				$results[] = array_merge($fields, $parameters);
 			}
 		}
 		
