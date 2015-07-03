@@ -96,6 +96,24 @@ class Query
 		
 		return $this;
 	}
+
+	/**
+	 * Add a where clause for a field to match null values.
+	 *
+	 * @param string $field
+	 * 
+	 * @return \Mmanos\Search\Query
+	 */
+	public function whereNull($field)
+	{
+		$this->query = $this->index->addConditionToQuery($this->query, array(
+			'field'    => $field,
+			'required' => true,
+			'missing'  => true,
+		));
+		
+		return $this;
+	}
 	
 	/**
 	 * Add a geo distance where clause to the query.

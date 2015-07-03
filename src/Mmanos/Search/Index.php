@@ -86,6 +86,19 @@ abstract class Index
 	
 	/**
 	 * Initialize and return a new Query instance on this index
+	 * with the requested where null condition.
+	 *
+	 * @param string $field
+	 * 
+	 * @return \Mmanos\Search\Query
+	 */
+	public function whereNull($field)
+	{
+		return $this->query()->whereNull($field);
+	}
+	
+	/**
+	 * Initialize and return a new Query instance on this index
 	 * with the requested geo distance where clause.
 	 *
 	 * @param float $lat
@@ -154,6 +167,7 @@ abstract class Index
 	 *                         - value      : value to match
 	 *                         - required   : must match
 	 *                         - prohibited : must not match
+	 *                         - missing    : must match null value
 	 *                         - phrase     : match as a phrase
 	 *                         - filter     : filter results on value
 	 *                         - fuzzy      : fuzziness value (0 - 1)

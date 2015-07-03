@@ -88,6 +88,7 @@ class Elasticsearch extends \Mmanos\Search\Index
 	 *                         - value      : value to match
 	 *                         - required   : must match
 	 *                         - prohibited : must not match
+	 *                         - missing    : must match null value
 	 *                         - phrase     : match as a phrase
 	 *                         - filter     : filter results on value
 	 *                         - fuzzy      : fuzziness value (0 - 1)
@@ -138,6 +139,15 @@ class Elasticsearch extends \Mmanos\Search\Index
 			);
 
 			$query['body']['query']['filtered']['filter']['geo_distance'] = $definition;
+
+			return $query;
+		}
+		elseif (!empty($condition['missing'])) {
+			$definition = array(
+				'field' => $field[0],
+			);
+
+			$query['body']['query']['filtered']['filter']['missing'] = $definition;
 
 			return $query;
 		}
