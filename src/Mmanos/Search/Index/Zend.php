@@ -32,6 +32,18 @@ class Zend extends \Mmanos\Search\Index
 	 * @var array
 	 */
 	protected $stored_query_totals = array();
+
+	/**
+	 * Create the index.
+	 *
+	 * @param array $fields
+	 *
+	 * @return bool
+	 */
+	public function createIndex(array $fields = array())
+	{
+		return false;
+	}
 	
 	/**
 	 * Get the ZendSearch lucene index instance associated with this instance.
@@ -170,11 +182,19 @@ class Zend extends \Mmanos\Search\Index
 		
 		if (!empty($response)) {
 			foreach ($response as $hit) {
-				$results[] = array_merge(
-					array(
+				$fields = array(
 						'id'     => $hit->xref_id,
 						'_score' => $hit->score,
-					),
+				);
+				
+				foreach ($hit->getDocument()->getFieldNames() as $name) {
+					if ($name == 'xref_id') continue;
+					
+					$fields[$name] = $hit->getDocument()->getFieldValue($name);
+				}
+				
+				$results[] = array_merge(
+					$fields,
 					json_decode(base64_decode($hit->_parameters), true)
 				);
 			}
@@ -226,10 +246,13 @@ class Zend extends \Mmanos\Search\Index
 		// Add id parameters.
 		$doc->addField(\ZendSearch\Lucene\Document\Field::keyword('xref_id', $id));
 		
-		// Add fields to document to be indexed (but not stored).
+		// Add fields to document to be indexed and stored.
 		foreach ($fields as $field => $value) {
-			if (is_array($value)) continue;
-			$doc->addField(\ZendSearch\Lucene\Document\Field::unStored(trim($field), trim($value)));
+			if (is_array($value)) {
+				$value = implode(' ', $value);
+			}
+			
+			$doc->addField(\ZendSearch\Lucene\Document\Field::text(trim($field), trim($value)));
 		}
 		
 		// Add parameters to document to be stored (but not indexed).

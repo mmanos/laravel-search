@@ -61,6 +61,16 @@ abstract class Index
 	}
 	
 	/**
+	 * Initialize and return a new Query instance on this index.
+	 * 
+	 * @return \Mmanos\Search\Query
+	 */
+	public function query()
+	{
+		return new Query($this);
+	}
+	
+	/**
 	 * Initialize and return a new Query instance on this index
 	 * with the requested where condition.
 	 *
@@ -71,8 +81,7 @@ abstract class Index
 	 */
 	public function where($field, $value)
 	{
-		$query = new Query($this);
-		return $query->where($field, $value);
+		return $this->query()->where($field, $value);
 	}
 	
 	/**
@@ -87,8 +96,7 @@ abstract class Index
 	 */
 	public function whereLocation($lat, $long, $distance_in_meters = 10000)
 	{
-		$query = new Query($this);
-		return $query->whereLocation($lat, $long, $distance_in_meters);
+		return $this->query()->whereLocation($lat, $long, $distance_in_meters);
 	}
 	
 	/**
@@ -105,8 +113,7 @@ abstract class Index
 	 */
 	public function search($field, $value, array $options = array())
 	{
-		$query = new Query($this);
-		return $query->search($field, $value, $options);
+		return $this->query()->search($field, $value, $options);
 	}
 	
 	/**
@@ -119,9 +126,17 @@ abstract class Index
 	 */
 	public function select($columns = array('*'))
 	{
-		$query = new Query($this);
-		return $query->select(is_array($columns) ? $columns : func_get_args());
+		return $this->query()->select(is_array($columns) ? $columns : func_get_args());
 	}
+	
+	/**
+	 * Create the index.
+	 *
+	 * @param array $fields
+	 *
+	 * @return bool
+	 */
+	abstract public function createIndex(array $fields = array());
 	
 	/**
 	 * Get a new query instance from the driver.

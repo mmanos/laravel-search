@@ -43,7 +43,19 @@ class Algolia extends \Mmanos\Search\Index
 	}
 	
 	/**
-	 * Get the ZendSearch lucene index instance associated with this instance.
+	 * Create the index.
+	 *
+	 * @param array $fields
+	 *
+	 * @return bool
+	 */
+	public function createIndex(array $fields = array())
+	{
+		return false;
+	}
+	
+	/**
+	 * Get the Algolia index instance associated with this instance.
 	 *
 	 * @return \AlgoliaSearch\Index
 	 */
