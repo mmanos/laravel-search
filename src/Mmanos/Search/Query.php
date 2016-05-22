@@ -1,6 +1,7 @@
 <?php namespace Mmanos\Search;
 
 use App, Input;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Query
 {
@@ -220,17 +221,15 @@ class Query
 	 *
 	 * @param int $num
 	 * 
-	 * @return \Illuminate\Pagination\Paginator
+	 * @return \Illuminate\Pagination\LengthAwarePaginator
 	 */
 	public function paginate($num = 15)
 	{
-		$paginator = App::make('paginator');
-		
 		$page = (int) Input::get('page', 1);
 		
 		$this->limit($num, ($page - 1) * $num);
 		
-		return $paginator->make($this->get(), $this->count(), $num);
+		return new LengthAwarePaginator($this->get(), $this->count(), $num, $page);
 	}
 	
 	/**
