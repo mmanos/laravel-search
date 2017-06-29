@@ -120,12 +120,12 @@ class Elasticsearch extends \Mmanos\Search\Index
 			) {
 				$fuzziness = $condition['fuzzy'];
 			}
-			$match_type = 'fuzzy_like_this';
+			$match_type = 'multi_match';
 			$definition = array(
-				'like_text'      => $value,
-				'fields'         => $field,
-				'prefix_length'  => 2,
-				'min_similarity' => $fuzziness,
+				'query'         => $value,
+				'fields'        => $field,
+				'prefix_length' => 2,
+				'fuzziness'     => $fuzziness,
 			);
 		}
 		elseif (array_get($condition, 'lat')) {
